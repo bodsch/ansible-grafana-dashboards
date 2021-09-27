@@ -1,0 +1,7 @@
+---
+
+grafana_dashboards_dependencies:
+  - git
+  - rsync
+
+...

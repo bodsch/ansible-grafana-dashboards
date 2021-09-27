@@ -1,0 +1,10 @@
+---
+
+- name: install requirements
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    "{{ grafana_dashboards_dependencies }}"
+
+...

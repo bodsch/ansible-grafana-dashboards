@@ -1,0 +1,16 @@
+---
+
+- include: preparations.yml
+  become: true
+  tags:
+    - preparations
+
+- include: installation.yml
+  become: true
+  tags:
+    - installation
+
+- include: configure.yml
+  become: true
+
+...
