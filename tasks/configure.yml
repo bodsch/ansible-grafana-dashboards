@@ -27,23 +27,23 @@
         "{{ sub_directories }}"
       notify:
         - provisioned dashboards changed
-#
-#     # - name: synchronize dashboards on remote system {{ grafana_data_dir }}/dashboards/
-#     #   synchronize:
-#     #     src: "/tmp/grafana-dashboards"
-#     #     dest: "{{ grafana_data_dir }}/dashboards/"
-#     #     recursive: true
-#     #     archive: false
-#     #     delete: true
-#     #     owner: false
-#     #     group: false
-#     #     checksum: true
-#     #     rsync_path: su -c rsync
-#     #     rsync_opts:
-#     #       - "--exclude=.git"
-#     #       - --verbose
-#     #   delegate_to: "{{ inventory_hostname }}"
-#     #   notify: "provisioned dashboards changed"
+
+    # - name: synchronize dashboards on remote system {{ grafana_data_dir }}/dashboards/
+    #   synchronize:
+    #     src: "/tmp/grafana-dashboards"
+    #     dest: "{{ grafana_data_dir }}/dashboards/"
+    #     recursive: true
+    #     archive: false
+    #     delete: true
+    #     owner: false
+    #     group: false
+    #     checksum: true
+    #     rsync_path: su -c rsync
+    #     rsync_opts:
+    #       - "--exclude=.git"
+    #       - --verbose
+    #   delegate_to: "{{ inventory_hostname }}"
+    #   notify: "provisioned dashboards changed"
 
     - name: create / update dashboards file (provisioning)
       become: true

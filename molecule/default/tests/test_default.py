@@ -104,12 +104,10 @@ def test_directories(host, dirs):
 def test_files(host, files):
     f = host.file(files)
 
-    #print(
+    # print(
     #    host.ansible("file", "path=/etc/grafana/provisioning/dashboards/overviews.yml")
-    #)
+    # )
 
     assert f.is_file
     assert f.group == "grafana"
     assert f.mode == 0o644
-
-    #assert True == False

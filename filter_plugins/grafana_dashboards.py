@@ -3,7 +3,6 @@
 from __future__ import (absolute_import, print_function)
 __metaclass__ = type
 
-import re
 from ansible.utils.display import Display
 
 display = Display()
@@ -30,7 +29,7 @@ class FilterModule(object):
             if isinstance(files, list):
                 for f in files:
                     file_list.append(
-                        f.get("path", None).replace( f"{path_reduce}/", '').split('/')[0]
+                        f.get("path", None).replace(f"{path_reduce}/", '').split('/')[0]
                     )
 
         if uniq:
