@@ -1,0 +1,17 @@
+---
+
+- name: git clone repository
+  delegate_to: localhost
+  become: false
+  git:
+    repo: "{{ grafana_dashboards_git.url }}"
+    version: "{{ grafana_dashboards_git.version }}"
+    update: "{{ grafana_dashboards_git.update | default('true') | bool }}"
+    dest: "{{ grafana_dashboards_local_tmp_directory }}"
+    depth: 1
+  when:
+    - grafana_dashboards_git is defined
+    - grafana_dashboards_git.url is defined
+    - grafana_dashboards_git.version is defined
+
+...

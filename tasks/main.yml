@@ -1,16 +1,18 @@
 ---
 
-- include: preparations.yml
-  become: true
+- name: prepare
+  include_tasks: prepare.yml
   tags:
-    - preparations
+    - grafana_dashboards_prepare
 
-- include: installation.yml
-  become: true
+- name: install
+  include_tasks: install.yml
   tags:
-    - installation
+    - grafana_dashboards_install
 
-- include: configure.yml
-  become: true
+- name: configure
+  include_tasks: configure.yml
+  tags:
+    - grafana_dashboards_configure
 
 ...
