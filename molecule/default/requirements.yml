@@ -1,7 +1,7 @@
 ---
 
 - name: grafana
-  src: https://github.com/cloudalchemy/ansible-grafana.git
+  src: cloudalchemy.grafana
   version: 0.18.0
 
 ...
