@@ -4,6 +4,8 @@ Importer for varoius Grafana Dashboards
 
 Supports folder for an better structure.
 
+A repository with sample dashboards can be viewed [here](https://gitlab.com/coremedia-as-code/monitoring/grafana-dashboards.git).
+
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-grafana-dashboards/CI)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-grafana-dashboards)][issues]
