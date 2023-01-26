@@ -22,6 +22,8 @@
   ansible.builtin.debug:
     msg: "{{ _git_clone.msg }}"
   when:
+    - _git_clone.msg is defined
+    - _git_clone.msg | string | length > 0
     - _git_clone.changed
 
 - name: changes git sources
