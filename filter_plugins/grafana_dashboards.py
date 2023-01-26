@@ -16,6 +16,7 @@ class FilterModule(object):
     def filters(self):
         return {
             'sub_directories': self.reduce_path,
+            'dashboard_hash': self.hash,
         }
 
     def reduce_path(self, data, path_reduce, uniq=True):
@@ -46,3 +47,12 @@ class FilterModule(object):
         display.v(f"= result: {file_list}")
 
         return file_list
+
+    def hash(self, data, path):
+        """
+        """
+        string = f"{data}/{path}"
+        import hashlib
+        _bytes = string.encode('utf-8')
+        hash = hashlib.sha256(_bytes)
+        return hash.hexdigest()

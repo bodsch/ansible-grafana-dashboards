@@ -1,17 +1,17 @@
 ---
 
 - name: prepare
-  include_tasks: prepare.yml
+  ansible.builtin.include_tasks: prepare.yml
   tags:
     - grafana_dashboards_prepare
 
 - name: install
-  include_tasks: install.yml
+  ansible.builtin.include_tasks: install.yml
   tags:
     - grafana_dashboards_install
 
 - name: configure
-  include_tasks: configure.yml
+  ansible.builtin.include_tasks: configure.yml
   tags:
     - grafana_dashboards_configure
 

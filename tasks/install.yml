@@ -3,15 +3,31 @@
 - name: git clone repository
   delegate_to: localhost
   become: false
-  git:
+  ansible.builtin.git:
     repo: "{{ grafana_dashboards_git.url }}"
     version: "{{ grafana_dashboards_git.version }}"
-    update: "{{ grafana_dashboards_git.update | default('true') | bool }}"
+    # update: "{{ grafana_dashboards_git.update | default('true') | bool }}"
     dest: "{{ grafana_dashboards_local_tmp_directory }}"
+    force: true
     depth: 1
+  register: _git_clone
   when:
     - grafana_dashboards_git is defined
     - grafana_dashboards_git.url is defined
     - grafana_dashboards_git.version is defined
+  changed_when:
+    - _git_clone.changed
+
+- name: changed message
+  ansible.builtin.debug:
+    msg: "{{ _git_clone.msg }}"
+  when:
+    - _git_clone.changed
+
+- name: changes git sources
+  ansible.builtin.set_fact:
+    changed_git_sources: true
+  when:
+    - _git_clone.changed
 
 ...
