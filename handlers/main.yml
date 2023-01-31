@@ -15,7 +15,21 @@
     state: reloaded
   tags:
     - grafana_run
-    -
+
+- name: changed message
+  ansible.builtin.debug:
+    msg: "{{ _git_clone.msg }}"
+  when:
+    - _git_clone.msg is defined
+    - _git_clone.msg | string | length > 0
+    - _git_clone.changed
+
+- name: changes git sources
+  ansible.builtin.set_fact:
+    changed_git_sources: true
+  when:
+    - _git_clone.changed
+
 - name: set privileges on provisioned dashboards
   become: true
   ansible.builtin.file:

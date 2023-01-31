@@ -11,96 +11,48 @@
   run_once: true
   register: found_dashboards
 
-- name: dashboard path
-  when:
-    - found_dashboards | default([]) | count > 0
-    - changed_git_sources
-  block:
-    - name: reduce the found dashboards to the subdirectories and remove the basepath
-      ansible.builtin.set_fact:
-        sub_directories: "{{ found_dashboards | sub_directories(path_reduce=grafana_dashboards_local_tmp_directory, uniq=True) }}"
+- name: reduce the found dashboards to the subdirectories and remove the basepath
+  ansible.builtin.set_fact:
+    sub_directories: "{{ found_dashboards | sub_directories(path_reduce=grafana_dashboards_local_tmp_directory, uniq=True) }}"
 
-    # - name: compress dashboard directories
-    #   delegate_to: localhost
-    #   become: false
-    #   community.general.archive:
-    #     path: "{{ grafana_dashboards_local_tmp_directory }}/{{ item }}"
-    #     dest: "{{ grafana_dashboards_local_tmp_directory }}/{{ item }}_{{ current_date }}.tgz"
-    #     mode: 0600
-    #   register: compress_dashboard_dir
-    #   loop:
-    #     "{{ sub_directories }}"
-    #
-    # - name:
-    #   debug:
-    #     msg: "{{ compress_dashboard_dir }}"
-    #
-    # - name: define checksum
-    #   delegate_to: localhost
-    #   become: false
-    #   ansible.builtin.stat:
-    #     path: "{{ grafana_dashboards_local_tmp_directory }}/{{ item }}_{{ current_date }}.tgz"
-    #     checksum_algorithm: sha256
-    #   register: archiv_checksums
-    #   loop:
-    #     "{{ sub_directories }}"
-    #   when:
-    #     - compress_dashboard_dir.changed
-    #
-    # - name:
-    #   debug:
-    #     msg: "{{ archiv_checksums }}"
-    #
-    # - name: create checksums
-    #   delegate_to: localhost
-    #   become: false
-    #   ansible.builtin.template:
-    #     src: checksums.j2
-    #     dest: "{{ grafana_dashboards_local_tmp_directory }}/checksums.txt"
-    #     mode: 0640
-    #   register: checksum_changed
-    #   when:
-    #     - compress_dashboard_dir.changed
-    # 
-    # - name:
-    #   debug:
-    #     msg: "{{ checksum_changed.changed }}"
+- name: syncronize local dashboards to our remote system
+  ansible.posix.synchronize:
+    src: "{{ grafana_dashboards_local_tmp_directory }}/"
+    dest: "{{ grafana_dashboards_remote_tmp_directory }}/"
+    rsync_opts:
+      - "--archive"
+      - "--recursive"
+      - "--delete"
+      - "--exclude='.git'"
+      - "--quiet"
 
-    - name: copy dashboards to remote system
-      block:
-        # - name: copy local dashboard archives to our remote system
-        #   ansible.builtin.copy:
-        #     src: "{{ grafana_dashboards_local_tmp_directory }}/{{ item }}_{{ current_date }}.tgz"
-        #     dest: "{{ grafana_dashboards_remote_tmp_directory }}/"
-        #     owner: grafana
-        #     group: grafana
-        #     mode: 0600
-        #   loop:
-        #     "{{ sub_directories }}"
+- name: change ownership
+  ansible.builtin.file:
+    path: "{{ grafana_dashboards_remote_tmp_directory }}"
+    owner: grafana
+    group: grafana
+    mode: 0750
+    recurse: true
+  changed_when: false
 
-        - name: copy local dashboards to our remote system
-          ansible.builtin.copy:
-            src: "{{ grafana_dashboards_local_tmp_directory }}/{{ item }}"
-            dest: "{{ grafana_data_dir }}/dashboards/"
-            owner: grafana
-            group: grafana
-            mode: 0644
-          loop:
-            "{{ sub_directories }}"
-          notify:
-            - provisioned dashboards changed
+- name: syncronize changed dashboards
+  delegate_to: "{{ ansible_hostname }}"
+  ansible.posix.synchronize:
+    src: "{{ grafana_dashboards_remote_tmp_directory }}/"
+    dest: "{{ grafana_data_dir }}/dashboards/"
+  register: rsync_out
 
-    - name: create / update dashboards file (provisioning)
-      become: true
-      ansible.builtin.template:
-        src: "provisioning.j2"
-        dest: "/etc/grafana/provisioning/dashboards/{{ item }}.yml"
-        owner: root
-        group: grafana
-        mode: 0644
-      loop:
-        "{{ sub_directories }}"
-      notify:
-        - restart grafana
+- name: create / update dashboards file (provisioning)
+  become: true
+  ansible.builtin.template:
+    src: "provisioning.j2"
+    dest: "/etc/grafana/provisioning/dashboards/{{ item }}.yml"
+    owner: root
+    group: grafana
+    mode: 0644
+  loop:
+    "{{ sub_directories }}"
+  notify:
+    - restart grafana
 
 ...

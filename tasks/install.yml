@@ -15,21 +15,27 @@
     - grafana_dashboards_git is defined
     - grafana_dashboards_git.url is defined
     - grafana_dashboards_git.version is defined
+  notify:
+    - changes git sources
+    - changed message
   changed_when:
     - _git_clone.changed
 
-- name: changed message
-  ansible.builtin.debug:
-    msg: "{{ _git_clone.msg }}"
-  when:
-    - _git_clone.msg is defined
-    - _git_clone.msg | string | length > 0
-    - _git_clone.changed
+- name: force handler after changed git repository
+  ansible.builtin.meta: flush_handlers
 
-- name: changes git sources
-  ansible.builtin.set_fact:
-    changed_git_sources: true
-  when:
-    - _git_clone.changed
+# - name: changed message
+#   ansible.builtin.debug:
+#     msg: "{{ _git_clone.msg }}"
+#   when:
+#     - _git_clone.msg is defined
+#     - _git_clone.msg | string | length > 0
+#     - _git_clone.changed
+#
+# - name: changes git sources
+#   ansible.builtin.set_fact:
+#     changed_git_sources: true
+#   when:
+#     - _git_clone.changed
 
 ...
