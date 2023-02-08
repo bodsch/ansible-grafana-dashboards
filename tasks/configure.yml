@@ -36,7 +36,8 @@
   changed_when: false
 
 - name: syncronize changed dashboards
-  delegate_to: "{{ ansible_hostname }}"
+  delegate_to: "{{ inventory_hostname }}"
+  become: true
   ansible.posix.synchronize:
     src: "{{ grafana_dashboards_remote_tmp_directory }}/"
     dest: "{{ grafana_data_dir }}/dashboards/"
