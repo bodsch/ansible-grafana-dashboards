@@ -89,7 +89,7 @@ def test_directories(host, dirs):
     d = host.file(dirs)
     assert d.is_directory
     assert d.group == "grafana"
-    assert d.mode == 0o755
+    assert d.mode == 0o750
 
 
 @pytest.mark.parametrize("files", [
