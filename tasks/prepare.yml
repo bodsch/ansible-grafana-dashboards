@@ -20,10 +20,6 @@
         - default.yml
       skip: true
 
-- name: update package cache
-  ansible.builtin.package:
-    update_cache: true
-
 - name: install dependencies
   become: true
   ansible.builtin.package:
@@ -59,10 +55,5 @@
     path: "{{ grafana_dashboards_remote_tmp_directory }}"
     state: directory
     mode: 0750
-
-- name: define current_date and current_timestamp
-  ansible.builtin.set_fact:
-    current_date: "{{ ansible_date_time.iso8601[0:10] }}"
-    current_timestamp: "{{ ansible_date_time.iso8601[0:19] }}"
 
 ...
