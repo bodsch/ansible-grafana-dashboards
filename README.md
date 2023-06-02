@@ -37,6 +37,8 @@ grafana_dashboards_upgrade: false
 
 grafana_dashboards_direct_download: false
 
+grafana_dashboards_servername: "{{ ansible_fqdn }}"
+
 grafana_dashboards_git:
   update: true
   url: ""
@@ -68,4 +70,4 @@ If you want to use something stable, please use a [Tagged Version](https://githu
 
 [Apache](LICENSE)
 
-`FREE SOFTWARE, HELL YEAH!`
+**FREE SOFTWARE, HELL YEAH!**

@@ -1,7 +1,7 @@
 ---
 
 - name: grafana
-  src: cloudalchemy.grafana
-  version: 0.18.0
+  src: bodsch.grafana
+  version: 0.20.1
 
 ...
