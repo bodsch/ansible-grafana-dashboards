@@ -39,7 +39,6 @@
   become: true
   ansible.builtin.command: |
     rsync \
-      --archive \
       --recursive \
       --chown=grafana:grafana \
       "{{ grafana_dashboards_remote_tmp_directory }}/" \
