@@ -37,11 +37,13 @@
 - name: syncronize changed dashboards
   delegate_to: "{{ grafana_dashboards_servername }}"
   become: true
-  ansible.posix.synchronize:
-    src: "{{ grafana_dashboards_remote_tmp_directory }}/"
-    dest: "{{ grafana_data_dir }}/dashboards/"
-    rsync_opts:
-      - --chown=grafana:grafana
+  ansible.builtin.command: |
+    rsync \
+      --archive \
+      --recursive \
+      --chown=grafana:grafana \
+      "{{ grafana_dashboards_remote_tmp_directory }}/" \
+      "{{ grafana_data_dir }}/dashboards/"
   register: rsync_out
 
 - name: create / update dashboards file (provisioning)
