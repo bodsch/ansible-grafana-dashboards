@@ -29,9 +29,8 @@
 - name: change ownership
   ansible.builtin.file:
     path: "{{ grafana_dashboards_remote_tmp_directory }}"
-    owner: grafana
     group: grafana
-    mode: 0750
+    mode: 0755
     recurse: true
   changed_when: false
 
@@ -41,6 +40,8 @@
   ansible.posix.synchronize:
     src: "{{ grafana_dashboards_remote_tmp_directory }}/"
     dest: "{{ grafana_data_dir }}/dashboards/"
+    rsync_opts:
+      - --chown=grafana:grafana
   register: rsync_out
 
 - name: create / update dashboards file (provisioning)

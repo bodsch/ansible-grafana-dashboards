@@ -54,6 +54,6 @@
   ansible.builtin.file:
     path: "{{ grafana_dashboards_remote_tmp_directory }}"
     state: directory
-    mode: 0750
+    mode: 0755
 
 ...
