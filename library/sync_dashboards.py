@@ -38,15 +38,17 @@ class Sync(object):
             msg="initial"
         )
 
-        exclude_pattern = ('^.*\.bin$',)
-        exclude_pattern = ('^.*\.json$',)
-        options=(create=False, verbose=True, exclude=exclude_pattern, include=include_pattern)
+        include_pattern = ('^.*\.json$',)
 
-        dirsync.sync(self.source_directory, self.destination_directory, 'sync', options)
+        if os.path.isdir(self.source_directory):
+            args = {'create': 'False', 'verbose': 'False', 'purge': 'True', 'include': include_pattern}
+            dirsync.sync(self.source_directory, self.destination_directory, 'sync', **args)
 
-        dirsync.sync(self.source_directory, self.destination_directory, 'diff', logger=self.logger)
+            self.module.log(msg=f"= state: {self.module.stdout}")
 
+        # dirsync.sync(self.source_directory, self.destination_directory, 'diff', logger=self.logger)
 
+        return result
 
 # ===========================================
 # Module execution.

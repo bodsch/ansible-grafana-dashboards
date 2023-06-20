@@ -37,7 +37,7 @@
 - name: syncronize changed dashboards
   delegate_to: "{{ grafana_dashboards_servername }}"
   become: true
-  sync:
+  sync_dashboards:
     source_directory: "{{ grafana_dashboards_remote_tmp_directory }}/"
     destination_directory: "{{ grafana_data_dir }}/dashboards/"
     group: grafana
