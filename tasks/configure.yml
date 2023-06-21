@@ -26,23 +26,22 @@
       - "--exclude='.git'"
       - "--quiet"
 
+- name: syncronize changed dashboards
+  become: true
+  sync_dashboards:
+    source_directory: "{{ grafana_dashboards_remote_tmp_directory }}/"
+    destination_directory: "{{ grafana_data_dir }}/dashboards/"
+    include_pattern:
+      - "*.json$"
+  register: sync_out
+
 - name: change ownership
   ansible.builtin.file:
-    path: "{{ grafana_dashboards_remote_tmp_directory }}"
+    path: "{{ grafana_data_dir }}/dashboards/"
     group: grafana
     mode: 0755
     recurse: true
   changed_when: false
-
-- name: syncronize changed dashboards
-  delegate_to: "{{ grafana_dashboards_servername }}"
-  become: true
-  ansible.posix.synchronize:
-    src: "{{ grafana_dashboards_remote_tmp_directory }}/"
-    dest: "{{ grafana_data_dir }}/dashboards/"
-    rsync_opts:
-      - --chown=grafana:grafana
-  register: rsync_out
 
 - name: create / update dashboards file (provisioning)
   become: true
