@@ -51,14 +51,18 @@ class Sync(object):
         self.source_directory = module.params.get("source_directory")
         self.destination_directory = module.params.get("destination_directory")
 
+        self.include_pattern = module.params.get("include_pattern")
+        self.exclude_pattern = module.params.get("exclude_pattern")
+
     def run(self):
         """
         """
-        result = dict(
-            changed=False,
-            failed=True,
-            msg="initial"
-        )
+        _failed = False
+        _changed = False
+        _msg = "The directory are synchronous."
+
+        include_pattern = None
+        exclude_pattern = None
 
         tail = TailLogger(2)
 
@@ -70,42 +74,90 @@ class Sync(object):
         logger.addHandler(log_handler)
         logger.setLevel(logging.DEBUG)
 
-        include_pattern = ('^.*\\.json$',)
+        if self.include_pattern and len(self.include_pattern) > 0:
+            include_pattern = "|".join(self.include_pattern)
+            include_pattern = f".*({include_pattern}).*"
 
-        if os.path.isdir(self.source_directory):
+        if self.exclude_pattern and len(self.exclude_pattern) > 0:
+            exclude_pattern = "|".join(self.exclude_pattern)
+            exclude_pattern = f".*({exclude_pattern}).*"
 
-            args = {
-                'create': 'False',
-                'verbose': 'False',
-                'purge': 'True',
-                'include': include_pattern,
-                'logger': logger,
-            }
+        # self.module.log(msg=f"include_pattern: {include_pattern}")
+        # include_pattern = ('^.*\\.json$',)
 
-            dirsync.sync(self.source_directory, self.destination_directory, 'sync', **args)
+        if not os.path.isdir(self.source_directory):
+            return dict(
+                failed=True,
+                msg="The source directory does not exist."
+            )
 
-            result['failed'] = False
-            result['msg'] = "The directories were successfully synchronised."
+        if not os.path.isdir(self.destination_directory):
+            return dict(
+                failed=True,
+                msg="The destination directory does not exist."
+            )
+
+        args = {
+            'create': 'False',
+            'verbose': 'False',
+            'purge': 'True',
+            'logger': logger,
+        }
+
+        if include_pattern:
+            args.update({'include': include_pattern, })
+        if exclude_pattern:
+            args.update({'exclude': exclude_pattern, })
+
+        # self.module.log(msg=f"args: {args}")
+
+        dirsync.sync(self.source_directory, self.destination_directory, 'sync', **args)
 
         log_contents = tail.contents()
 
-        # self.module.log(msg=f"len: {len(log_contents)}")
-        # self.module.log(msg=f"log: {log_contents}")
-
         if len(log_contents) > 0:
-            pattern = re.compile(r"(?P<directories_parsed>\d+).*directories parsed, (?P<files_copied>\d+) files copied")
+            if "directories were created" in log_contents:
+                pattern = re.compile(r"(?P<directories>\d+).*directories were created.$")
+            else:
+                pattern = re.compile(r"(?P<directories>\d+).*directories parsed, (?P<files_copied>\d+) files copied")
 
             re_result = re.search(pattern, log_contents)
 
-            files_copied = re_result.group('files_copied')
+            if re_result:
 
-            if files_copied:
-                if int(files_copied) == 0:
-                    result['changed'] = False
-                    result['msg'] = "The directories are synchronous."
-                elif int(files_copied) > 0:
-                    result['changed'] = True
-                    result['msg'] = "The directories were successfully synchronised."
+                directories = None
+                files_copied = None
+
+                try:
+                    directories = re_result.group('directories')
+                except Exception:
+                    pass
+
+                try:
+                    files_copied = re_result.group('files_copied')
+                except Exception:
+                    pass
+
+                # self.module.log(msg=f"directories: {directories}")
+                # self.module.log(msg=f"files_copied: {files_copied}")
+
+                if files_copied:
+                    if int(files_copied) == 0:
+                        _changed = False
+                        _msg = "The directory are synchronous."
+                    elif int(files_copied) > 0:
+                        _changed = True
+                        _msg = "The directory were successfully synchronised."
+                elif directories:
+                    if int(directories) > 0:
+                        _changed = True
+                        _msg = "The directory were successfully synchronised."
+
+        result = dict(
+            changed=_changed,
+            failed=_failed,
+            msg=_msg
+        )
 
         return result
 
@@ -124,6 +176,14 @@ def main():
         destination_directory=dict(
             required=True,
             type='str'
+        ),
+        include_pattern=dict(
+            required=False,
+            type='list'
+        ),
+        exclude_pattern=dict(
+            required=False,
+            type='list'
         ),
     )
 

@@ -31,6 +31,8 @@
   sync_dashboards:
     source_directory: "{{ grafana_dashboards_remote_tmp_directory }}/"
     destination_directory: "{{ grafana_data_dir }}/dashboards/"
+    include_pattern:
+      - "*.json$"
   register: sync_out
 
 - name: change ownership
