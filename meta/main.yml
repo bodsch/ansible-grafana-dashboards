@@ -2,7 +2,6 @@
 
 galaxy_info:
   role_name: grafana_dashboards
-  namespace: bodsch
 
   author: Bodo Schulz
   description: Importer for Grafana Dashboards
