@@ -28,7 +28,7 @@ Tested on
 * Arch Linux
 * Artix Linux
 * Debian based
-    - Debian 11
+    - Debian 11 / 12
 
 ## configuration
 
