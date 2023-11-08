@@ -13,7 +13,6 @@ grafana_dashboards_remote_tmp_directory: "/var/tmp/grafana-dashboards/{{ dashboa
 grafana_dashboards_dependencies:
   - git
   - rsync
-  - python3-virtualenv
 
 grafana_dashboards_python_packages:
   - name: dirsync
