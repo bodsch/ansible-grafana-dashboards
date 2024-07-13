@@ -5,6 +5,8 @@ Supports folder for an better structure.
 
 A repository with sample dashboards can be viewed [here](https://gitlab.com/coremedia-as-code/monitoring/grafana-dashboards.git).
 
+> Further development of this Ansible role has been moved to Collection [bodsch.grafana](https://github.com/bodsch/ansible-collection-grafana).
+> **This repository will therefore no longer be actively maintained.**
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-grafana-dashboards/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-grafana-dashboards)][issues]
